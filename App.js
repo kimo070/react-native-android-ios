@@ -1,49 +1,49 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StatusBar, I18nManager, NetInfo, BackHandler, Alert} from 'react-native';
+import Route from './src/Route';
+import {MenuProvider} from 'react-native-popup-menu';
+import store from './src/Stores/orderStore';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+export default class App extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            color: 'black',
+            loading: false
+        };
+        I18nManager.forceRTL(false);
+    }
 
-type Props = {};
-export default class App extends Component<Props> {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-      </View>
-    );
-  }
+    fucn() {
+        var timerId = setInterval(() => {
+            if (store.statusbar_color !== null) {
+                // this.setState({ loading: false })
+                clearInterval(timerId);
+            } else {
+                console.warn('app.js')
+            }
+        }, 5000);
+    }
+
+    componentDidMount() {
+        setTimeout(() => {
+            this.setState({color: store.statusbar_color})
+        }, 9000)
+    }
+
+    render() {
+        return (
+            <MenuProvider>
+                <StatusBar
+                    hidden={false}
+                    animated={true}
+                    backgroundColor={this.state.color}
+                    barStyle="light-content"
+                    networkActivityIndicatorVisible={Platform.OS === 'ios' ? false : false}
+                    showHideTransition={Platform.OS === 'ios' ? 'slide' : null}
+                />
+                <Route/>
+            </MenuProvider>
+        );
+    }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
